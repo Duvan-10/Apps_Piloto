@@ -30,10 +30,12 @@
             flex-direction: column;
             align-items: center;
             transition: transform 0.2s;
+            cursor: pointer; /* Indica que se puede hacer clic */
         }
 
         .tarjeta-encuentro:hover {
             transform: scale(1.02);
+            background: #363636;
         }
 
         .fecha-hora {
@@ -74,7 +76,6 @@
             margin-bottom: 5px;
         }
 
-        /* Estilos nuevos para el Vigilante */
         .sentimiento {
             font-size: 0.75em;
             display: flex;
@@ -98,6 +99,33 @@
             color: #ffffff; 
             width: 16%; 
         }
+
+        /* --- NUEVOS ESTILOS PARA EL HISTORIAL --- */
+        .detalle-historial {
+            display: none; /* Oculto por defecto */
+            width: 100%;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #555;
+            animation: fadeIn 0.3s;
+        }
+
+        .barra-progreso {
+            display: flex;
+            height: 12px;
+            background: #444;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progreso-home { background: #00ff85; transition: width 0.5s; }
+        .progreso-away { background: #ff4c4c; transition: width 0.5s; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -105,7 +133,7 @@
     
     <div class="contenedor">
         {% for partido in partidos %}
-        <div class="tarjeta-encuentro">
+        <div class="tarjeta-encuentro" onclick="toggleHistorial(this, '{{ partido.id }}', '{{ partido.homeTeam.id }}', '{{ partido.awayTeam.id }}')">
             <div class="fecha-hora">
                 {{ partido.utcDate.replace('T', ' ').replace('Z', '') }}
             </div>
@@ -143,8 +171,56 @@
                     </div>
                 </div>
             </div>
+
+            <div class="detalle-historial">
+                <div style="font-size: 0.7em; color: #888; margin-bottom: 5px;">EFECTIVIDAD HISTÓRICA (LOCAL vs VISITA)</div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9em; font-weight: bold;">
+                    <span class="txt-home">0%</span>
+                    <span class="txt-away">0%</span>
+                </div>
+                <div class="barra-progreso">
+                    <div class="progreso-home" style="width: 0%"></div>
+                    <div class="progreso-away" style="width: 0%"></div>
+                </div>
+                <div style="font-size: 0.65em; color: #666;" class="txt-total">Cargando enfrentamientos...</div>
+            </div>
         </div>
         {% endfor %}
     </div>
+
+    <script>
+        function toggleHistorial(elemento, matchId, homeId, awayId) {
+            const detalle = elemento.querySelector('.detalle-historial');
+            
+            // Si ya está visible, lo ocultamos
+            if (detalle.style.display === 'block') {
+                detalle.style.display = 'none';
+                return;
+            }
+
+            // Si no tiene datos aún, los pedimos a nuestra API de Flask
+            fetch(`/api/historial/${matchId}/${homeId}/${awayId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        elemento.querySelector('.txt-total').innerText = "Sin datos históricos suficientes";
+                    } else {
+                        // Actualizamos los textos y las barras
+                        elemento.querySelector('.txt-home').innerText = `Local: ${data.home}%`;
+                        elemento.querySelector('.txt-away').innerText = `Visita: ${data.away}%`;
+                        elemento.querySelector('.txt-total').innerText = `Basado en ${data.total} enfrentamientos previos`;
+                        
+                        elemento.querySelector('.progreso-home').style.width = `${data.home}%`;
+                        elemento.querySelector('.progreso-away').style.width = `${data.away}%`;
+                    }
+                    detalle.style.display = 'block';
+                })
+                .catch(err => {
+                    console.error("Error al obtener historial:", err);
+                    elemento.querySelector('.txt-total').innerText = "Error al cargar datos";
+                    detalle.style.display = 'block';
+                });
+        }
+    </script>
 </body>
 </html>
