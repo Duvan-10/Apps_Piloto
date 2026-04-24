@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Analizador de Fútbol - Premier League</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #1a1a1a; 
+            color: white; 
+            text-align: center; 
+            margin: 0;
+            padding: 20px;
+        }
+
+        .contenedor { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+            gap: 25px; 
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Contenedor principal de cada encuentro */
+        .tarjeta-encuentro {
+            background: #2d2d2d;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column; /* Alinea elementos de arriba hacia abajo */
+            align-items: center;
+        }
+
+        /* Estilo para la fecha y hora arriba */
+        .fecha-hora {
+            font-size: 0.85em;
+            color: #00ff85; /* Color verde Premier League */
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 1px solid #444;
+            width: 100%;
+            padding-bottom: 8px;
+        }
+
+        /* Contenedor horizontal para los equipos */
+        .duelo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .equipo { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 40%; 
+        }
+        
+        .escudo { 
+            width: 55px; 
+            height: 55px; 
+            object-fit: contain; 
+            margin-bottom: 8px; 
+        }
+
+        .nombre-equipo {
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        .vs { 
+            font-size: 1.2em; 
+            font-weight: bold; 
+            color: #ffffff; 
+            width: 20%; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Próxima Fecha: Premier League 2026</h1>
+    
+    <div class="contenedor">
+        {% for partido in partidos %}
+        <div class="tarjeta-encuentro">
+            <div class="fecha-hora">
+                {{ partido.utcDate.replace('T', ' ').replace('Z', '') }}
+            </div>
+
+            <div class="duelo">
+                <div class="equipo">
+                    <img src="{{ partido.homeTeam.crest }}" alt="{{ partido.homeTeam.name }}" class="escudo">
+                    <span class="nombre-equipo">{{ partido.homeTeam.name }}</span>
+                </div>
+
+                <div class="vs">VS</div>
+
+                <div class="equipo">
+                    <img src="{{ partido.awayTeam.crest }}" alt="{{ partido.awayTeam.name }}" class="escudo">
+                    <span class="nombre-equipo">{{ partido.awayTeam.name }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
