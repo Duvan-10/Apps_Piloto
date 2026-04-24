@@ -1,5 +1,8 @@
+# pyright: reportMissingImports=false
 from flask import Flask, render_template
-import requests
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+import json
 
 app = Flask(__name__, template_folder='../GUI')
 
@@ -16,8 +19,11 @@ def obtener_proxima_fecha():
     
     try:
         # Si aún no tienes API KEY, esta parte fallará y saltará al 'except'
-        response = requests.get(url, headers=headers, params=params)
-        data = response.json()
+        query = urlencode(params)
+        full_url = f"{url}?{query}"
+        req = Request(full_url, headers=headers)
+        with urlopen(req) as response:
+            data = json.loads(response.read().decode('utf-8'))
         matches = data.get('matches', [])
         
         if matches:
