@@ -2,225 +2,360 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Analizador de Fútbol - Premier League</title>
-    <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #1a1a1a; 
-            color: white; 
-            text-align: center; 
-            margin: 0;
-            padding: 20px;
-        }
-
-        .contenedor { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
-            gap: 25px; 
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .tarjeta-encuentro {
-            background: #2d2d2d;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: transform 0.2s;
-            cursor: pointer; /* Indica que se puede hacer clic */
-        }
-
-        .tarjeta-encuentro:hover {
-            transform: scale(1.02);
-            background: #363636;
-        }
-
-        .fecha-hora {
-            font-size: 0.85em;
-            color: #00ff85; 
-            margin-bottom: 15px;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-bottom: 1px solid #444;
-            width: 100%;
-            padding-bottom: 8px;
-        }
-
-        .duelo {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-
-        .equipo { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            width: 42%; 
-        }
-        
-        .escudo { 
-            width: 55px; 
-            height: 55px; 
-            object-fit: contain; 
-            margin-bottom: 8px; 
-        }
-
-        .nombre-equipo {
-            font-size: 0.9em;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .sentimiento {
-            font-size: 0.75em;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 8px;
-            border-radius: 10px;
-            background: rgba(0,0,0,0.2);
-        }
-
-        .punto {
-            height: 8px;
-            width: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        
-        .vs { 
-            font-size: 1.2em; 
-            font-weight: bold; 
-            color: #ffffff; 
-            width: 16%; 
-        }
-
-        /* --- NUEVOS ESTILOS PARA EL HISTORIAL --- */
-        .detalle-historial {
-            display: none; /* Oculto por defecto */
-            width: 100%;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px dashed #555;
-            animation: fadeIn 0.3s;
-        }
-
-        .barra-progreso {
-            display: flex;
-            height: 12px;
-            background: #444;
-            border-radius: 6px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-
-        .progreso-home { background: #00ff85; transition: width 0.5s; }
-        .progreso-away { background: #ff4c4c; transition: width 0.5s; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+    <title>Analizador de Torneos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Próxima Fecha: Premier League 2026</h1>
-    
-    <div class="contenedor">
-        {% for partido in partidos %}
-        <div class="tarjeta-encuentro" onclick="toggleHistorial(this, '{{ partido.id }}', '{{ partido.homeTeam.id }}', '{{ partido.awayTeam.id }}')">
-            <div class="fecha-hora">
-                {{ partido.utcDate.replace('T', ' ').replace('Z', '') }}
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-kicker">Proyecto Piloto</div>
+                <h2>Predicciones</h2>
+                <div class="torneo-actual">
+                    <img id="torneo-actual-logo" class="torneo-logo-actual" src="" alt="Logo torneo activo">
+                    <p id="torneo-actual-label">Premier League</p>
+                </div>
             </div>
 
-            <div class="duelo">
-                <div class="equipo">
-                    <img src="{{ partido.homeTeam.crest }}" alt="{{ partido.homeTeam.name }}" class="escudo">
-                    <span class="nombre-equipo">{{ partido.homeTeam.name }}</span>
-                    
-                    <div class="sentimiento">
-                        {% if partido.sentimiento_home > 0.1 %}
-                            <span class="punto" style="background-color: #00ff85;"></span> Positivo
-                        {% elif partido.sentimiento_home < -0.1 %}
-                            <span class="punto" style="background-color: #ff4c4c;"></span> Crítico
-                        {% else %}
-                            <span class="punto" style="background-color: #aaa;"></span> Estable
-                        {% endif %}
+            <nav class="sidebar-nav">
+                <button class="nav-item active" onclick="navegar('predicciones', this)">
+                    <span class="nav-icon">◉</span>
+                    <span class="nav-text">
+                        <span class="nav-title">Predicciones de Victoria</span>
+                        <span class="nav-subtitle">Partidos, forma y sentimiento</span>
+                    </span>
+                </button>
+                <button class="nav-item" onclick="navegar('estadisticas', this)">
+                    <span class="nav-icon">▣</span>
+                    <span class="nav-text">
+                        <span class="nav-title">Estadísticas</span>
+                        <span class="nav-subtitle">Métricas y resumen visual</span>
+                    </span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <span>API: football-data</span>
+                <span>Noticias: NewsAPI</span>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            <section id="predicciones" class="seccion activa">
+                <div class="section-header">
+                    <h1 id="titulo-predicciones">Próxima Fecha: Premier League 2026</h1>
+                    <p>Vista principal con partidos, sentimiento y historial por enfrentamiento.</p>
+                </div>
+
+                <div class="liga-selector-wrap">
+                    <div class="liga-selector-head">
+                        <h3>Selecciona una liga</h3>
+                        <p>Los partidos se actualizan al instante según el torneo elegido.</p>
+                        <div class="liga-selector-controls">
+                            <div class="filtro-margen-selector" role="group" aria-label="Selector de filtro de margen">
+                                <button id="filtro-margen-todos" class="filtro-margen-btn activo" type="button" data-valor="0">
+                                    Todos
+                                </button>
+                                <button id="filtro-margen-80" class="filtro-margen-btn" type="button" data-valor="80">
+                                    80%+
+                                </button>
+                            </div>
+                            <span class="filtro-margen-texto">Por defecto se muestran todos los partidos.</span>
+                        </div>
                     </div>
+                    <div id="torneo-switch" class="liga-selector"></div>
                 </div>
 
-                <div class="vs">VS</div>
+                <div id="estado-partidos" class="panel-vacio">Cargando partidos del backend...</div>
+                <div id="contenedor-partidos" class="contenedor"></div>
+            </section>
 
-                <div class="equipo">
-                    <img src="{{ partido.awayTeam.crest }}" alt="{{ partido.awayTeam.name }}" class="escudo">
-                    <span class="nombre-equipo">{{ partido.awayTeam.name }}</span>
-                    
-                    <div class="sentimiento">
-                        {% if partido.sentimiento_away > 0.1 %}
-                            <span class="punto" style="background-color: #00ff85;"></span> Positivo
-                        {% elif partido.sentimiento_away < -0.1 %}
-                            <span class="punto" style="background-color: #ff4c4c;"></span> Crítico
-                        {% else %}
-                            <span class="punto" style="background-color: #aaa;"></span> Estable
-                        {% endif %}
-                    </div>
+            <section id="estadisticas" class="seccion">
+                <div class="section-header">
+                    <h1>Estadísticas Avanzadas</h1>
+                    <p>Espacio preparado para métricas, tendencias y resúmenes del modelo.</p>
                 </div>
-            </div>
 
-            <div class="detalle-historial">
-                <div style="font-size: 0.7em; color: #888; margin-bottom: 5px;">EFECTIVIDAD HISTÓRICA (LOCAL vs VISITA)</div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.9em; font-weight: bold;">
-                    <span class="txt-home">0%</span>
-                    <span class="txt-away">0%</span>
+                <div class="panel-vacio">
+                    <h3>Módulo en desarrollo</h3>
+                    <p>Aquí se integrará la lógica explicada por Duvan.</p>
                 </div>
-                <div class="barra-progreso">
-                    <div class="progreso-home" style="width: 0%"></div>
-                    <div class="progreso-away" style="width: 0%"></div>
-                </div>
-                <div style="font-size: 0.65em; color: #666;" class="txt-total">Cargando enfrentamientos...</div>
-            </div>
-        </div>
-        {% endfor %}
+            </section>
+        </main>
     </div>
 
     <script>
-        function toggleHistorial(elemento, matchId, homeId, awayId) {
-            const detalle = elemento.querySelector('.detalle-historial');
-            
-            // Si ya está visible, lo ocultamos
-            if (detalle.style.display === 'block') {
-                detalle.style.display = 'none';
+        const apiBase = window.location.protocol === 'file:' ? 'http://127.0.0.1:5000' : '';
+        let torneoActivo = localStorage.getItem('torneoActivo') || 'premier';
+        let filtroMargenActivo = localStorage.getItem('filtroMargenActivo') === '1' || localStorage.getItem('filtroMargenMinimo') === '80';
+        let cargaPartidosSeq = 0;
+        let torneosDisponibles = [];
+
+        function resolverLogoUrl(logo) {
+            if (!logo) return '';
+            if (logo.startsWith('http://') || logo.startsWith('https://')) return logo;
+            if (logo.startsWith('/') && window.location.protocol === 'file:') return `${apiBase}${logo}`;
+            return logo;
+        }
+
+        function nombreTorneo(torneo) {
+            const torneoEncontrado = torneosDisponibles.find(t => t.id === torneo);
+            return torneoEncontrado ? torneoEncontrado.nombre : 'Premier League';
+        }
+
+        function actualizarLabelsTorneo() {
+            const torneo = torneosDisponibles.find(t => t.id === torneoActivo);
+            const nombre = nombreTorneo(torneoActivo);
+            document.getElementById('torneo-actual-label').innerText = nombre;
+            document.getElementById('titulo-predicciones').innerText = `Próxima Fecha: ${nombre} 2026`;
+
+            const logoElem = document.getElementById('torneo-actual-logo');
+            const logoSrc = resolverLogoUrl(torneo ? torneo.logo : '');
+            logoElem.src = logoSrc;
+            logoElem.style.display = logoSrc ? 'block' : 'none';
+
+            document.querySelectorAll('.torneo-card').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.torneo === torneoActivo);
+            });
+        }
+
+        function renderBotonesTorneo() {
+            const contenedor = document.getElementById('torneo-switch');
+
+            contenedor.innerHTML = torneosDisponibles.map(torneo => `
+                <button class="torneo-card ${torneo.id === torneoActivo ? 'active' : ''}" data-torneo="${torneo.id}">
+                    <span class="torneo-card-icon-wrap">
+                        <img class="torneo-card-icon" src="${resolverLogoUrl(torneo.logo)}" alt="${torneo.nombre}">
+                    </span>
+                    <span class="torneo-card-body">
+                        <span class="torneo-card-name">${torneo.nombre}</span>
+                        <span class="torneo-card-code">${torneo.codigo}</span>
+                    </span>
+                </button>
+            `).join('');
+
+            contenedor.querySelectorAll('.torneo-card').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    torneoActivo = btn.dataset.torneo;
+                    localStorage.setItem('torneoActivo', torneoActivo);
+                    actualizarLabelsTorneo();
+                    cargarPartidos();
+                });
+            });
+        }
+
+        function cargarTorneos() {
+            return fetch(`${apiBase}/api/torneos`)
+                .then(r => {
+                    if (!r.ok) throw new Error('No se pudieron cargar los torneos');
+                    return r.json();
+                })
+                .then(torneos => {
+                    if (!Array.isArray(torneos) || torneos.length === 0) {
+                        throw new Error('No hay torneos disponibles');
+                    }
+
+                    torneosDisponibles = torneos;
+
+                    if (!torneosDisponibles.some(t => t.id === torneoActivo)) {
+                        torneoActivo = torneosDisponibles[0].id;
+                        localStorage.setItem('torneoActivo', torneoActivo);
+                    }
+
+                    renderBotonesTorneo();
+                    actualizarLabelsTorneo();
+                })
+                .catch(err => {
+                    console.error('Error cargando torneos:', err);
+                    torneosDisponibles = [
+                        { id: 'premier', nombre: 'Premier League', codigo: 'PL', logo: 'https://crests.football-data.org/PL.png' },
+                        { id: 'laliga', nombre: 'LaLiga', codigo: 'PD', logo: 'https://crests.football-data.org/laliga.png' }
+                    ];
+                    renderBotonesTorneo();
+                    actualizarLabelsTorneo();
+                });
+        }
+
+        function navegar(id, btn) {
+            document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(id).classList.add('activa');
+            btn.classList.add('active');
+        }
+
+        function sentimientoLabel(valor) {
+            if (valor > 0.1) {
+                return '<span class="punto positivo"></span> Positivo';
+            }
+            if (valor < -0.1) {
+                return '<span class="punto negativo"></span> Crítico';
+            }
+            return '<span class="punto neutro"></span> Estable';
+        }
+
+        function renderPartidos(partidos) {
+            const contenedor = document.getElementById('contenedor-partidos');
+            const estado = document.getElementById('estado-partidos');
+
+            if (!Array.isArray(partidos) || partidos.length === 0) {
+                estado.innerText = 'No se encontraron partidos para mostrar.';
+                contenedor.innerHTML = '';
                 return;
             }
 
-            // Si no tiene datos aún, los pedimos a nuestra API de Flask
-            fetch(`/api/historial/${matchId}/${homeId}/${awayId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        elemento.querySelector('.txt-total').innerText = "Sin datos históricos suficientes";
-                    } else {
-                        // Actualizamos los textos y las barras
-                        elemento.querySelector('.txt-home').innerText = `Local: ${data.home}%`;
-                        elemento.querySelector('.txt-away').innerText = `Visita: ${data.away}%`;
-                        elemento.querySelector('.txt-total').innerText = `Basado en ${data.total} enfrentamientos previos`;
-                        
-                        elemento.querySelector('.progreso-home').style.width = `${data.home}%`;
-                        elemento.querySelector('.progreso-away').style.width = `${data.away}%`;
-                    }
-                    detalle.style.display = 'block';
+            estado.style.display = 'none';
+
+            contenedor.innerHTML = partidos.map(partido => `
+                <div class="tarjeta-encuentro" data-match-id="${partido.id}" data-home-id="${partido.homeTeam.id}" data-away-id="${partido.awayTeam.id}">
+                    <div class="fecha-hora">${(partido.utcDate || '').slice(0, 10)}</div>
+                    ${Number(partido.margen_victoria_max) > 0 ? `<div class="margen-victoria">Margen H2H: ${Number(partido.margen_victoria_max).toFixed(1)}%</div>` : ''}
+                    <div class="duelo">
+                        <div class="equipo">
+                            <img src="${partido.homeTeam.crest || ''}" class="escudo" alt="${partido.homeTeam.name || ''}">
+                            <p>${partido.homeTeam.name || 'Local'}</p>
+                            <div class="sentimiento">${sentimientoLabel(Number(partido.sentimiento_home) || 0)}</div>
+                        </div>
+                        <div class="vs-chip">VS</div>
+                        <div class="equipo">
+                            <img src="${partido.awayTeam.crest || ''}" class="escudo" alt="${partido.awayTeam.name || ''}">
+                            <p>${partido.awayTeam.name || 'Visitante'}</p>
+                            <div class="sentimiento">${sentimientoLabel(Number(partido.sentimiento_away) || 0)}</div>
+                        </div>
+                    </div>
+
+                    <div class="detalle-historial">
+                        <div class="barra-progreso">
+                            <div class="progreso-home" style="width: 0%"></div>
+                            <div class="progreso-away" style="width: 0%"></div>
+                        </div>
+                        <p class="txt-h2h">Cargando historial...</p>
+                    </div>
+                </div>
+            `).join('');
+
+            contenedor.querySelectorAll('.tarjeta-encuentro').forEach(card => {
+                card.addEventListener('click', () => {
+                    toggleHistorial(
+                        card,
+                        card.dataset.matchId,
+                        card.dataset.homeId,
+                        card.dataset.awayId
+                    );
+                });
+            });
+        }
+
+        function cargarPartidos() {
+            const estado = document.getElementById('estado-partidos');
+            const contenedor = document.getElementById('contenedor-partidos');
+            const seqActual = ++cargaPartidosSeq;
+
+            estado.style.display = 'block';
+            estado.innerText = filtroMargenActivo
+                ? `Cargando partidos de ${nombreTorneo(torneoActivo)} con filtro 80%+...`
+                : `Cargando todos los partidos de ${nombreTorneo(torneoActivo)}...`;
+            contenedor.innerHTML = '';
+
+            const params = new URLSearchParams({ torneo: torneoActivo });
+            if (filtroMargenActivo) {
+                params.set('margen', '80');
+            }
+
+            fetch(`${apiBase}/api/partidos?${params.toString()}`, { cache: 'no-store' })
+                .then(r => {
+                    if (!r.ok) throw new Error('No se pudieron cargar los partidos');
+                    return r.json();
+                })
+                .then(partidos => {
+                    if (seqActual !== cargaPartidosSeq) return;
+                    renderPartidos(partidos);
                 })
                 .catch(err => {
-                    console.error("Error al obtener historial:", err);
-                    elemento.querySelector('.txt-total').innerText = "Error al cargar datos";
-                    detalle.style.display = 'block';
+                    if (seqActual !== cargaPartidosSeq) return;
+                    console.error('Error cargando partidos:', err);
+                    estado.innerText = 'No fue posible cargar los datos del backend.';
                 });
         }
+
+        function inicializarSelectorTorneo() {
+            return cargarTorneos();
+        }
+
+        function toggleHistorial(card, mId, hId, aId) {
+            const detalle = card.querySelector('.detalle-historial');
+            const txt = card.querySelector('.txt-h2h');
+            const ph = card.querySelector('.progreso-home');
+            const pa = card.querySelector('.progreso-away');
+
+            if (detalle.style.display === 'block') { detalle.style.display = 'none'; return; }
+
+            // Mostrar estado de carga
+            txt.innerText = 'Cargando historial...';
+            ph.style.width = '0%';
+            pa.style.width = '0%';
+            detalle.style.display = 'block';
+
+            fetch(`${apiBase}/api/historial/${mId}/${hId}/${aId}?torneo=${encodeURIComponent(torneoActivo)}`)
+                .then(r => {
+                    if (!r.ok) throw new Error('Respuesta no OK');
+                    return r.json();
+                })
+                .then(data => {
+                    // Si la API devolvió un error, mostrar mensaje claro
+                    if (data.error) {
+                        txt.innerText = 'Sin datos históricos suficientes';
+                        ph.style.width = '0%';
+                        pa.style.width = '0%';
+                        return;
+                    }
+
+                    const home = Number(data.home) || 0;
+                    const away = Number(data.away) || 0;
+                    const total = Number(data.total) || 0;
+
+                    if (total === 0) {
+                        txt.innerText = 'Sin datos históricos suficientes';
+                    } else {
+                        txt.innerText = `L: ${home}% | V: ${away}% (${total} partidos)`;
+                    }
+
+                    ph.style.width = `${home}%`;
+                    pa.style.width = `${away}%`;
+                })
+                .catch(err => {
+                    console.error('Error al obtener historial:', err);
+                    txt.innerText = 'Error al cargar datos';
+                    ph.style.width = '0%';
+                    pa.style.width = '0%';
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const filtroMargenBotones = document.querySelectorAll('.filtro-margen-btn');
+
+            function actualizarFiltroMargenUI() {
+                filtroMargenBotones.forEach(btn => {
+                    const valor = Number(btn.dataset.valor || '0');
+                    const activo = filtroMargenActivo ? valor === 80 : valor === 0;
+                    btn.classList.toggle('activo', activo);
+                    btn.setAttribute('aria-pressed', activo ? 'true' : 'false');
+                });
+                localStorage.setItem('filtroMargenActivo', filtroMargenActivo ? '1' : '0');
+                localStorage.setItem('filtroMargenMinimo', filtroMargenActivo ? '80' : '0');
+            }
+
+            filtroMargenBotones.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filtroMargenActivo = Number(btn.dataset.valor || '0') === 80;
+                    actualizarFiltroMargenUI();
+                    cargarPartidos();
+                });
+            });
+
+            actualizarFiltroMargenUI();
+
+            inicializarSelectorTorneo().finally(cargarPartidos);
+        });
     </script>
 </body>
 </html>
