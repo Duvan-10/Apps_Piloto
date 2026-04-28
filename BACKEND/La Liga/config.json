@@ -1,9 +1,0 @@
-{
-  "id": "laliga",
-  "nombre": "LaLiga",
-  "codigo": "PD",
-  "aliases": ["la liga", "la_liga", "pd"],
-  "logo": "https://crests.football-data.org/laliga.png",
-  "idioma": "es",
-  "terminos_liga": ["LaLiga", "Primera División", "fútbol español"]
-}

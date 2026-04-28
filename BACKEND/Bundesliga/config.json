@@ -1,9 +1,0 @@
-{
-  "id": "bundesliga",
-  "nombre": "Bundesliga",
-  "codigo": "BL1",
-  "aliases": ["bl1", "alemania", "bundes"],
-  "logo": "https://crests.football-data.org/BL1.png",
-  "idioma": "de",
-  "terminos_liga": ["Bundesliga", "BL1", "fußball", "Bundesliga football"]
-}
