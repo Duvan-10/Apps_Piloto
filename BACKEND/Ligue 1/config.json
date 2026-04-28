@@ -1,0 +1,9 @@
+{
+  "id": "ligue1",
+  "nombre": "Ligue 1",
+  "codigo": "FL1",
+  "aliases": ["ligue 1", "fl1", "francia"],
+  "logo": "https://crests.football-data.org/FL1.png",
+  "idioma": "fr",
+  "terminos_liga": ["Ligue 1", "L1", "football français"]
+}

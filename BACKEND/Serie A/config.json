@@ -1,0 +1,9 @@
+{
+  "id": "seriea",
+  "nombre": "Serie A",
+  "codigo": "SA",
+  "aliases": ["serie a", "sa", "italia"],
+  "logo": "https://crests.football-data.org/c111.png",
+  "idioma": "it",
+  "terminos_liga": ["Serie A", "Calcio", "campionato italiano"]
+}

@@ -1,0 +1,9 @@
+{
+  "id": "nuevo_torneo",
+  "nombre": "Nuevo Torneo",
+  "codigo": "XXX",
+  "aliases": ["nuevo torneo", "xxx"],
+  "logo": "https://crests.football-data.org/XXX.png",
+  "idioma": "en",
+  "terminos_liga": ["Nuevo Torneo", "XXX", "football"]
+}

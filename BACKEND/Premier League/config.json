@@ -1,0 +1,9 @@
+{
+  "id": "premier",
+  "nombre": "Premier League",
+  "codigo": "PL",
+  "aliases": ["pl", "premier league"],
+  "logo": "https://crests.football-data.org/PL.png",
+  "idioma": "en",
+  "terminos_liga": ["Premier League", "EPL", "Premier League football"]
+}
