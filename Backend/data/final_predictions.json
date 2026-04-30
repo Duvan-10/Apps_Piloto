@@ -1,0 +1,37 @@
+[
+    {
+        "partido": "Club Atlético de Madrid vs Arsenal FC",
+        "probabilidades": {
+            "Club Atlético de Madrid": "52.0%",
+            "Arsenal FC": "48.0%",
+            "Empate": "0%"
+        },
+        "recomendacion": "Doble Oportunidad / Empate"
+    },
+    {
+        "partido": "Arsenal FC vs Club Atlético de Madrid",
+        "probabilidades": {
+            "Arsenal FC": "52.0%",
+            "Club Atlético de Madrid": "48.0%",
+            "Empate": "0%"
+        },
+        "recomendacion": "Doble Oportunidad / Empate"
+    },
+    {
+        "partido": "FC Bayern München vs Paris Saint-Germain FC",
+        "probabilidades": {
+            "FC Bayern München": "52.0%",
+            "Paris Saint-Germain FC": "48.0%",
+            "Empate": "0%"
+        },
+        "recomendacion": "Doble Oportunidad / Empate"
+    },
+    {
+        "partido": "None vs None",
+        "probabilidades": {
+            "null": "48.0%",
+            "Empate": "0%"
+        },
+        "recomendacion": "Doble Oportunidad / Empate"
+    }
+]
